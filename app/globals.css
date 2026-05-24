@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 30% 8%;
+    --foreground: 220 10% 95%;
+    --card: 220 30% 11%;
+    --card-foreground: 220 10% 95%;
+    --popover: 220 30% 11%;
+    --popover-foreground: 220 10% 95%;
+    --primary: 45 95% 55%;
+    --primary-foreground: 220 30% 8%;
+    --secondary: 220 25% 18%;
+    --secondary-foreground: 220 10% 95%;
+    --muted: 220 25% 18%;
+    --muted-foreground: 220 10% 65%;
+    --accent: 280 60% 55%;
+    --accent-foreground: 220 10% 95%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 220 10% 95%;
+    --border: 220 25% 22%;
+    --input: 220 25% 22%;
+    --ring: 45 95% 55%;
+    --radius: 0.6rem;
+  }
+
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+.step-light    { @apply border-l-4 border-l-step-light; }
+.step-dark     { @apply border-l-4 border-l-step-dark; }
+.step-melatonin{ @apply border-l-4 border-l-step-melatonin; }
+.step-sleep    { @apply border-l-4 border-l-step-sleep; }
+.step-exercise { @apply border-l-4 border-l-step-exercise; }
+.step-caffeine { @apply border-l-4 border-l-step-caffeine; }
