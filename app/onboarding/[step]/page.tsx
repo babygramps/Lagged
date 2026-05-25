@@ -18,7 +18,7 @@ export default async function OnboardingStepPage({ params }: Params) {
     return (
       <QuestionScreen
         step={s}
-        question={"When do you normally\nfall asleep?"}
+        question={"When do you\nnormally\nfall asleep?"}
         hint={{ label: "Why only whole hours?" }}
         options={BEDTIME_OPTIONS.map((o) => ({ id: o.id, label: o.label, outlier: o.outlier }))}
         selectAction={selectAnswer}
@@ -29,7 +29,7 @@ export default async function OnboardingStepPage({ params }: Params) {
     return (
       <QuestionScreen
         step={s}
-        question={"When do you normally\nwake up?"}
+        question={"When do you\nnormally\nwake up?"}
         hint={{ label: "Why only whole hours?" }}
         options={WAKE_OPTIONS.map((o) => ({ id: o.id, label: o.label, outlier: o.outlier }))}
         selectAction={selectAnswer}
@@ -40,7 +40,7 @@ export default async function OnboardingStepPage({ params }: Params) {
     return (
       <QuestionScreen
         step={s}
-        question={"What's your sex?"}
+        question={"What's your\nsex?"}
         hint={{ label: "Why are you asking?" }}
         options={[
           { id: "female", label: "Female" },
