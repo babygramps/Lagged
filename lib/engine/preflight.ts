@@ -105,8 +105,9 @@ export function emitPreflightSteps(
     void caffeineCutoff;
     void advance;
 
-    // Melatonin on Day -1 always; Days -2 and -3 if heavy shift (handled in caller via shiftHours)
-    if (i === 1) {
+    // Melatonin on Day -1 always; Days -2 and -3 if heavy shift (handled in caller via shiftHours).
+    // Skipped entirely when the user has opted out.
+    if (i === 1 && input.usesMelatonin !== false) {
       const melAt = sleepStart.minus({ hours: 5 });
       steps.push({
         kind: "melatonin_dose",

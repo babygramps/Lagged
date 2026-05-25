@@ -72,6 +72,42 @@ export default async function SettingsPage() {
             </div>
 
             <div className="space-y-2">
+              <Label>Sex</Label>
+              <div className="flex gap-4 text-sm">
+                {(["female", "male", "other"] as const).map((c) => (
+                  <label key={c} className="inline-flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="sex"
+                      value={c}
+                      defaultChecked={profile?.sex === c}
+                    />
+                    {c}
+                  </label>
+                ))}
+                <label className="inline-flex items-center gap-2 text-muted-foreground">
+                  <input type="radio" name="sex" value="" defaultChecked={!profile?.sex} />
+                  prefer not to say
+                </label>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Small per-day rate modifier (Duffy 2011, Cain 2010). Optional.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Use melatonin</Label>
+              <label className="inline-flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  name="usesMelatonin"
+                  defaultChecked={profile?.usesMelatonin ?? true}
+                />
+                Emit 0.5 mg melatonin steps eastward
+              </label>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="homeTz">Home timezone</Label>
               <select
                 id="homeTz"

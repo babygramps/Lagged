@@ -1,4 +1,5 @@
 export type Chronotype = "early" | "neutral" | "late";
+export type Sex = "female" | "male" | "other";
 
 export type StepKind =
   | "light_seek"
@@ -19,6 +20,8 @@ export interface ProtocolInput {
   habitualBedtimeLocal: string; // "23:00"
   habitualWakeLocal: string; // "07:00"
   chronotype: Chronotype;
+  sex?: Sex; // optional — applies a small rate modifier (Duffy 2011, Cain 2010)
+  usesMelatonin?: boolean; // default true; false suppresses all melatonin_dose steps
   departAt: Date;
   arriveAt: Date;
   returnDepartAt?: Date;

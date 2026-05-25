@@ -1,4 +1,5 @@
 import {
+  boolean,
   index,
   integer,
   jsonb,
@@ -61,6 +62,7 @@ export const verificationTokens = pgTable(
 
 // App enums
 export const chronotypeEnum = pgEnum("chronotype", ["early", "neutral", "late"]);
+export const sexEnum = pgEnum("sex", ["female", "male", "other"]);
 export const tripDirectionEnum = pgEnum("trip_direction", ["east", "west", "none"]);
 export const stepKindEnum = pgEnum("step_kind", [
   "light_seek",
@@ -85,7 +87,10 @@ export const profiles = pgTable("profile", {
   habitualBedtimeLocal: text("habitual_bedtime_local").notNull().default("23:00"),
   habitualWakeLocal: text("habitual_wake_local").notNull().default("07:00"),
   homeTz: text("home_tz").notNull().default("America/Los_Angeles"),
+  sex: sexEnum("sex"),
+  usesMelatonin: boolean("uses_melatonin").notNull().default(true),
   ntfyTopic: text("ntfy_topic"),
+  onboardedAt: timestamp("onboarded_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });

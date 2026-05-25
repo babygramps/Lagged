@@ -4,9 +4,21 @@ import {
   CHRONOTYPE_OFFSET_MIN,
   DLMO_BEFORE_BED_H,
   SHIFT_RATE_EAST_H_PER_DAY,
+  SHIFT_RATE_SEX_MODIFIER_H_PER_DAY,
   SHIFT_RATE_WEST_H_PER_DAY,
 } from "./constants";
-import type { Chronotype, ProtocolInput } from "./types";
+import type { Chronotype, ProtocolInput, Sex } from "./types";
+
+/**
+ * Effective per-day shift rate given the user's sex (Duffy 2011, Cain 2010).
+ * Falls back to the literature-average rate when sex is not provided.
+ */
+export function effectiveRate(direction: "east" | "west", sex?: Sex): number {
+  const base = direction === "east" ? SHIFT_RATE_EAST_H_PER_DAY : SHIFT_RATE_WEST_H_PER_DAY;
+  if (!sex) return base;
+  const mod = SHIFT_RATE_SEX_MODIFIER_H_PER_DAY[sex][direction];
+  return Math.max(0.5, base + mod); // floor at 0.5h/day so modifiers can't degenerate
+}
 import { dtInZoneOnDate, isoDateInZone } from "./util";
 
 export interface Baseline {
@@ -114,8 +126,9 @@ export function shiftedCbtMin(
   dayIndex: number,
   direction: "east" | "west",
   targetShiftHours: number, // signed
+  sex?: Sex,
 ): DateTime {
-  const rate = direction === "east" ? SHIFT_RATE_EAST_H_PER_DAY : SHIFT_RATE_WEST_H_PER_DAY;
+  const rate = effectiveRate(direction, sex);
   const target = Math.abs(targetShiftHours);
   const magnitude = Math.min(rate * dayIndex, target);
   const dayShifted = dayZeroCbtMin.plus({ days: dayIndex });
@@ -125,9 +138,8 @@ export function shiftedCbtMin(
 }
 
 /** Days needed to fully shift to target. */
-export function daysToAdapt(direction: "east" | "west", targetShiftHours: number): number {
-  if (direction === "east") return Math.ceil(Math.abs(targetShiftHours) / SHIFT_RATE_EAST_H_PER_DAY);
-  return Math.ceil(Math.abs(targetShiftHours) / SHIFT_RATE_WEST_H_PER_DAY);
+export function daysToAdapt(direction: "east" | "west", targetShiftHours: number, sex?: Sex): number {
+  return Math.ceil(Math.abs(targetShiftHours) / effectiveRate(direction, sex));
 }
 
 export type { Chronotype };

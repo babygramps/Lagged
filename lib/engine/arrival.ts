@@ -10,12 +10,10 @@ import {
   MELATONIN_DAYS_POST_ARRIVAL,
   MELATONIN_DOSE_MG,
   MELATONIN_PRE_DLMO_OFFSET_H,
-  SHIFT_RATE_EAST_H_PER_DAY,
-  SHIFT_RATE_WEST_H_PER_DAY,
   SLEEP_DURATION_H,
 } from "./constants";
 import type { Baseline } from "./circadian";
-import { projectBaselineToArrivalDay, shiftedCbtMin } from "./circadian";
+import { effectiveRate, projectBaselineToArrivalDay, shiftedCbtMin } from "./circadian";
 import type { ProtocolInput, Step } from "./types";
 
 /**
@@ -32,13 +30,14 @@ export function emitArrivalSteps(
   stayEnd: DateTime, // last instant of dest stay (UTC)
 ): Step[] {
   const steps: Step[] = [];
-  const rate = direction === "east" ? SHIFT_RATE_EAST_H_PER_DAY : SHIFT_RATE_WEST_H_PER_DAY;
+  const usesMelatonin = input.usesMelatonin !== false;
+  const rate = effectiveRate(direction, input.sex);
   const totalDaysToAdapt = Math.ceil(Math.abs(shiftHours) / rate);
   const dayZeroCbtMin = projectBaselineToArrivalDay(baseline.cbtMin, input.destTz, input.arriveAt);
 
   // For each adaptation day d=0..N, compute markers
   for (let d = 0; d <= totalDaysToAdapt + 10; d++) {
-    const cbtMin = shiftedCbtMin(dayZeroCbtMin, d, direction, shiftHours);
+    const cbtMin = shiftedCbtMin(dayZeroCbtMin, d, direction, shiftHours, input.sex);
     // Day window roughly = [cbtMin - 12h, cbtMin + 12h]; we use cbtMin as anchor
     if (cbtMin.toMillis() > stayEnd.toMillis() + 86400_000) break;
 
@@ -110,8 +109,9 @@ export function emitArrivalSteps(
       });
     }
 
-    // Melatonin (eastward only, Days 1..MELATONIN_DAYS_POST_ARRIVAL)
-    if (direction === "east" && d >= 1 && d <= MELATONIN_DAYS_POST_ARRIVAL) {
+    // Melatonin (eastward only, Days 1..MELATONIN_DAYS_POST_ARRIVAL,
+    // and only when the user has opted in)
+    if (usesMelatonin && direction === "east" && d >= 1 && d <= MELATONIN_DAYS_POST_ARRIVAL) {
       const melAt = dlmo.minus({ hours: MELATONIN_PRE_DLMO_OFFSET_H });
       if (melAt.toMillis() < stayEnd.toMillis()) {
         steps.push({

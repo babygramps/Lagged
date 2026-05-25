@@ -12,6 +12,8 @@ const Schema = z.object({
   habitualBedtimeLocal: z.string().regex(/^\d{2}:\d{2}$/),
   habitualWakeLocal: z.string().regex(/^\d{2}:\d{2}$/),
   homeTz: z.string().min(3),
+  sex: z.enum(["female", "male", "other"]).nullable().optional(),
+  usesMelatonin: z.boolean(),
   ntfyTopic: z.string().regex(/^[a-zA-Z0-9_-]{6,64}$/).nullable().optional(),
 });
 
@@ -19,11 +21,14 @@ export async function saveProfile(formData: FormData): Promise<void> {
   const session = await auth();
   if (!session?.user?.id) return;
 
+  const sexRaw = formData.get("sex")?.toString() || null;
   const parsed = Schema.parse({
     chronotype: formData.get("chronotype"),
     habitualBedtimeLocal: formData.get("habitualBedtimeLocal"),
     habitualWakeLocal: formData.get("habitualWakeLocal"),
     homeTz: formData.get("homeTz"),
+    sex: sexRaw === "female" || sexRaw === "male" || sexRaw === "other" ? sexRaw : null,
+    usesMelatonin: formData.get("usesMelatonin") === "on" || formData.get("usesMelatonin") === "true",
     ntfyTopic: (formData.get("ntfyTopic")?.toString() || null) as string | null,
   });
 
@@ -35,7 +40,10 @@ export async function saveProfile(formData: FormData): Promise<void> {
       habitualBedtimeLocal: parsed.habitualBedtimeLocal,
       habitualWakeLocal: parsed.habitualWakeLocal,
       homeTz: parsed.homeTz,
+      sex: parsed.sex ?? null,
+      usesMelatonin: parsed.usesMelatonin,
       ntfyTopic: parsed.ntfyTopic ?? null,
+      onboardedAt: new Date(),
       updatedAt: new Date(),
     })
     .onConflictDoUpdate({
@@ -45,6 +53,8 @@ export async function saveProfile(formData: FormData): Promise<void> {
         habitualBedtimeLocal: parsed.habitualBedtimeLocal,
         habitualWakeLocal: parsed.habitualWakeLocal,
         homeTz: parsed.homeTz,
+        sex: parsed.sex ?? null,
+        usesMelatonin: parsed.usesMelatonin,
         ntfyTopic: parsed.ntfyTopic ?? null,
         updatedAt: new Date(),
       },

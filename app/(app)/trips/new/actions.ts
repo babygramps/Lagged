@@ -60,6 +60,8 @@ export async function createTrip(formData: FormData): Promise<void> {
     habitualBedtimeLocal: profile!.habitualBedtimeLocal,
     habitualWakeLocal: profile!.habitualWakeLocal,
     chronotype: profile!.chronotype,
+    sex: profile!.sex ?? undefined,
+    usesMelatonin: profile!.usesMelatonin,
     departAt,
     arriveAt,
     returnDepartAt,

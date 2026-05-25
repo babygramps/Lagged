@@ -4,6 +4,16 @@ export const ENGINE_VERSION = "engine-2026-05-24-v1";
 export const SHIFT_RATE_EAST_H_PER_DAY = 1.0;
 export const SHIFT_RATE_WEST_H_PER_DAY = 1.5;
 
+// Sex-based rate modifier (Duffy et al. 2011 PNAS — women τ ≈ 24.09h vs men ≈ 24.19h:
+// shorter intrinsic period → slightly faster east advance, slightly slower west delay).
+// Cain et al. 2010 J Biol Rhythms — women show slightly larger melatonin response to light.
+// Effects are small but real; magnitudes here are conservative reads of those datasets.
+export const SHIFT_RATE_SEX_MODIFIER_H_PER_DAY = {
+  female: { east: +0.10, west: -0.10 },
+  male:   { east: -0.05, west: +0.05 },
+  other:  { east:  0.00, west:  0.00 },
+} as const;
+
 // Below this magnitude we do not generate a protocol
 export const MIN_SHIFT_HOURS_FOR_PROTOCOL = 3;
 
